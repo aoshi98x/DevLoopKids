@@ -19,37 +19,27 @@ const Login = () => {
 
     try {
       if (isRegister) {
-        // Registro de nuevo pequeño desarrollador
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        // REGISTRO
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { full_name: fullName } // Guardamos el nombre en los metadatos de auth
+            data: { full_name: fullName } // Enviamos el nombre al trigger
           }
         });
 
-        if (authError) throw authError;
-
-        // Nota: El perfil en la tabla 'profiles' se crea automáticamente 
-        // si configuraste un Trigger en Supabase. Si no, lo insertamos aquí:
-        if (authData.user) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert([{ id: authData.user.id, full_name: fullName, is_active: false }]);
-          if (profileError) throw profileError;
-        }
-
-        alert('¡Misión casi completada! Revisa tu correo para confirmar tu cuenta.');
+        if (error) throw error;
+        
+        // Con el Trigger SQL, la fila en 'profiles' se crea sola.
+        alert('¡Cuenta creada! Revisa tu correo para activar tu perfil de explorador.');
       } else {
-        // Inicio de sesión
+        // LOGIN
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate('/'); // Al dashboard o home
+        navigate('/'); 
       }
     } catch (err) {
-      setErrorMsg(err.message === 'Invalid login credentials' 
-        ? '¡Ups! El correo o la contraseña no coinciden. Inténtalo de nuevo.' 
-        : err.message);
+      setErrorMsg(err.message);
     } finally {
       setLoading(false);
     }
