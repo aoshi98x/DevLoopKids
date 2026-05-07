@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../api/supabaseClient';
 import ReactMarkdown from 'react-markdown';
+import ChatBot from '../components/ChatBot';
 
 const SessionDetail = () => {
   const { user } = useAuth();
@@ -139,6 +140,7 @@ const SessionDetail = () => {
       >
         {completingSession ? '🚀 GUARDANDO...' : '✔️ ¡TERMINÉ MI MISIÓN!'}
       </button>
+      
     );
   };
 
@@ -154,7 +156,11 @@ const SessionDetail = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-6">
       <div className={`${isFullWidth ? 'max-w-5xl' : 'max-w-7xl'} mx-auto transition-all duration-500`}>
-        
+        {/* El Widget de Chat */}
+            <ChatBot 
+            sessionContext={markdownContent} 
+            userName={user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Explorador'} 
+            />       
         {/* Header Superior */}
         <div className="mb-8 flex items-center justify-between bg-white p-5 rounded-[2rem] shadow-sm border-2 border-gray-100">
           <button onClick={() => navigate(`/salon/${cursoId}`)} className="flex items-center text-gray-500 font-black hover:text-brand-primary transition-colors text-lg">
@@ -246,7 +252,7 @@ const SessionDetail = () => {
               </div>
             </div>
           </div>
-
+             
           {/* COLUMNA LATERAL (Solo Sincrónicas) */}
           {!isFullWidth && (
             <div className="lg:w-1/3">
@@ -294,7 +300,9 @@ const SessionDetail = () => {
 
         </div>
       </div>
+        
     </div>
+    
   );
 };
 
